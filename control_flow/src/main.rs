@@ -4,6 +4,10 @@ fn main() {
     if_in_let();
     loops();
     labeled_loop();
+    while_loops();
+    while_loops_indexer();
+    for_loops();
+    rev_it();
 }
 
 fn basic_ifs() {
@@ -80,4 +84,44 @@ fn labeled_loop() {
     }
 
     println!("End count = {count}")
+}
+
+fn while_loops() {
+    let mut number = 3;
+
+    while number != 0 {
+        println!("{number}");
+
+        number -= 1;
+    }
+
+    println!("LIFTOFF!!")
+}
+
+fn while_loops_indexer() {
+    let a = [10, 20, 30, 40, 50];
+    let mut index = 0;
+
+    while index < 5 {
+        println!("The value is: {}", a[index]);
+
+        index += 1;
+    }
+}
+
+
+fn for_loops() {
+    let a = [10, 20, 30, 40, 50];
+
+    for element in a {
+        println!("The value is: {element}")
+    }
+}
+
+fn rev_it() {
+    for number in (1..4).rev() {
+        println!("{number}");
+    }
+
+    println!("LIFTOFF!!!")
 }
