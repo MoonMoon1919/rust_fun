@@ -1,43 +1,56 @@
 use std::io;
 use std::collections::HashMap;
+use std::io::BufRead;
 
-fn get_username_department(input: &str) -> (String, String) {
-    let split_string = input.split_whitespace();
+enum Command {
+    Add {dept: String, name: String},
+    List(String),
+    Quit,
+    All,
+}
 
-    let mut name = "";
-    let mut department = "";
+impl Command {
+    fn from_input(s: &str) -> Option<Self> {
+        let words: Vec<&str> = s.split_whitespace().collect();
 
-    for (i, word) in split_string.enumerate() {
-        if i == 1 {
-            name = word;
-        } else if i == 3 {
-            department = word;
+        match words.as_slice() {
+            ["All"] => Some(Command::All),
+            ["Quit"] => Some(Command::Quit),
+            ["List", dept] => Some(Command::List(dept.to_string())),
+            ["Add", name, "to", dept] => Some(Command::Add { dept: dept.to_string(), name: name.to_string() }),
+            _ => None,
         }
     }
-
-    (name.to_string(), department.to_string())
 }
 
 fn main() {
     let mut employees: HashMap<String, Vec<String>> = HashMap::new();
 
-    loop {
-        println!("Input the a new user and their department");
-        println!("e.g., Add Sally to Sales");
-        let mut user_input = String::new();
+    println!("Type 'All' to list all employees and their departments");
+    println!("Type 'Add' <name> to <department> to add an employee");
+    println!("Type 'List <department> to list employees of a department");
+    println!("Type 'Quit' to exit");
 
-        io::stdin()
-            .read_line(&mut user_input)
-            .expect("Failed to read input");
+    for line in io::stdin().lock().lines() {
+        let input = line.expect("Failed to read user input");
 
-        let user_input = user_input.trim().to_string();
-        let (username, department) = get_username_department(&user_input);
-
-        employees.entry(String::from(department)).and_modify(|x| {
-            let idx = x.binary_search(&username).unwrap_or_else(|e| e);
-            x.insert(idx, username.to_string())
-        }).or_insert(vec![username]);
-
-        println!("{:?}", employees)
+        match Command::from_input(&input) {
+            Some(Command::All) => {
+                println!("{:?}", employees);
+            }
+            Some(Command::Quit) => break,
+            Some(Command::List(dept)) => {
+                let dept_employees = employees.get(&dept);
+                println!("Employees for {}: {:?}", dept, dept_employees);
+            }
+            Some(Command::Add { dept, name }) => {
+                employees.entry(String::from(&dept)).and_modify(|x| {
+                    let idx = x.binary_search(&name).unwrap_or_else(|e| e);
+                    x.insert(idx, name.to_string())
+                }).or_insert(vec![name.to_string()]);
+                println!("Added {} to department {}", name, dept);
+            }
+            None => println!("Input error"),
+        }
     }
 }
