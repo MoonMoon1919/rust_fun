@@ -34,6 +34,15 @@ mod tests {
         assert_eq!(4, add_two(2));
     }
 
+    #[test]
+    fn it_works() -> Result<(), String> {
+        if add_two(2) == 4 {
+            Ok(())
+        } else {
+            Err(String::from("add_two(2) does not equal 4"))
+        }
+    }
+
     // Intentionally make a test that fails
     // #[test]
     // fn another() {
